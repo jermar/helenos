@@ -51,6 +51,7 @@ typedef enum {
 } cap_state_t;
 
 typedef enum {
+	KOBJECT_TYPE_ANSWERBOX,
 	KOBJECT_TYPE_CALL,
 	KOBJECT_TYPE_IRQ,
 	KOBJECT_TYPE_PHONE,
@@ -60,6 +61,7 @@ typedef enum {
 
 struct task;
 
+struct answerbox;
 struct call;
 struct irq;
 struct phone;
@@ -86,6 +88,7 @@ typedef struct kobject {
 
 	union {
 		void *raw;
+		struct answerbox *answerbox;
 		struct call *call;
 		struct irq *irq;
 		struct phone *phone;
