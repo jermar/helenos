@@ -165,6 +165,7 @@ errno_t tsk_constructor(void *obj, unsigned int kmflags)
 	list_initialize(&task->threads);
 
 	ipc_answerbox_init(&task->answerbox, task);
+	list_initialize(&task->answerboxes);
 
 	spinlock_initialize(&task->active_calls_lock, "active_calls_lock");
 	list_initialize(&task->active_calls);

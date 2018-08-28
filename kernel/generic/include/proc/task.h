@@ -98,8 +98,10 @@ typedef struct task {
 
 	/* IPC stuff */
 
-	/** Receiving communication endpoint */
+	/** Default receiving communication endpoint */
 	answerbox_t answerbox;
+	/** Dynamically created answerboxes */
+	list_t answerboxes;
 
 	/** Spinlock protecting the active_calls list. */
 	SPINLOCK_DECLARE(active_calls_lock);
