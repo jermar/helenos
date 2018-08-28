@@ -171,7 +171,7 @@ answerbox_t *ipc_answerbox_alloc(void)
 	if (!box)
 		return NULL;
 
-	kobject_t *kobj = malloc(sizeof(kobject_t));
+	kobject_t *kobj = kobject_alloc(FRAME_ATOMIC);
 	if (!kobj) {
 		slab_free(answerbox_cache, box);
 		return NULL;
