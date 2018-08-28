@@ -140,6 +140,7 @@ call_t *ipc_call_alloc(void)
  */
 void ipc_answerbox_init(answerbox_t *box, task_t *task)
 {
+	link_initialize(&box->ab_link);
 	irq_spinlock_initialize(&box->lock, "ipc.box.lock");
 	irq_spinlock_initialize(&box->irq_lock, "ipc.box.irqlock");
 	waitq_initialize(&box->wq);
@@ -150,6 +151,39 @@ void ipc_answerbox_init(answerbox_t *box, task_t *task)
 	list_initialize(&box->irq_notifs);
 	atomic_store(&box->active_calls, 0);
 	box->task = task;
+	box->kobject = NULL;
+}
+
+static void answerbox_destroy(void *arg)
+{
+	answerbox_t *box = (answerbox_t *) arg;
+
+	slab_free(answerbox_cache, box);
+}
+
+static kobject_ops_t answerbox_kobject_ops = {
+	.destroy = answerbox_destroy
+};
+
+answerbox_t *ipc_answerbox_alloc(void)
+{
+	answerbox_t *box = slab_alloc(answerbox_cache, FRAME_ATOMIC);
+	if (!box)
+		return NULL;
+
+	kobject_t *kobj = malloc(sizeof(kobject_t));
+	if (!kobj) {
+		slab_free(answerbox_cache, box);
+		return NULL;
+	}
+
+	ipc_answerbox_init(box, TASK);
+
+	kobject_initialize(kobj, KOBJECT_TYPE_ANSWERBOX, box,
+	    &answerbox_kobject_ops);
+	box->kobject = kobj;
+
+	return box;
 }
 
 /** Connect a phone to an answerbox.

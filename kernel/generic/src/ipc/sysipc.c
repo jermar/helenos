@@ -350,6 +350,71 @@ static int check_call_limit(phone_t *phone)
 	return 0;
 }
 
+/** Create a new answerbox for the task
+ *
+ * @param ahandle[out]  Userspace address of the variable that will receive the
+ *                      newly created answerbox capability handle.
+ *
+ * @return  EOK on success.
+ * @return  An error code on error.
+ */
+sys_errno_t sys_ipc_answerbox_create(cap_answerbox_handle_t *ahandle)
+{
+	errno_t res;
+	cap_handle_t handle;
+
+	res = cap_alloc(TASK, &handle);
+	if (res != EOK)
+		return res;
+
+	answerbox_t *box = ipc_answerbox_alloc();
+	if (!box) {
+		cap_free(TASK, handle);
+		return ENOMEM;
+	}
+
+	res = copy_to_uspace(ahandle, handle, sizeof(handle));
+	if (res != EOK) {
+		kobject_put(box->kobject);
+		cap_free(TASK, handle);
+		return res;
+	}
+
+	irq_spinlock_lock(&TASK->lock, true);
+	list_append(&box->ab_link, &TASK->answerboxes);
+	kobject_add_ref(box->kobject);
+	irq_spinlock_unlock(&TASK->lock, true);
+
+	cap_publish(TASK, handle, box->kobject);
+
+	return EOK;
+}
+
+/** Destroy a task's answerbox
+ *
+ * @param ahandle[in]  Capability handle of the answerbox to be destroyed.
+ *
+ * @return  EOK on success.
+ * @return  An error code on error.
+ */
+sys_errno_t sys_ipc_answerbox_destroy(cap_answerbox_handle_t ahandle)
+{
+	kobject_t *kobj = cap_unpublish(TASK, ahandle, KOBJECT_TYPE_ANSWERBOX);
+	if (!kobj)
+		return ENOENT;
+
+	irq_spinlock_lock(&TASK->lock, true);
+	if (link_in_use(&kobj->answerbox->ab_link)) {
+		list_remove(&kobj->answerbox->ab_link);
+		kobject_put(kobj);
+	}
+	irq_spinlock_unlock(&TASK->lock, true);
+
+	kobject_put(kobj);
+	cap_free(TASK, ahandle);
+	return EOK;
+}
+
 /** Make a fast asynchronous call over IPC.
  *
  * This function can only handle three arguments of payload, but is faster than

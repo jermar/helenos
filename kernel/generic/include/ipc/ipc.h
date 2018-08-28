@@ -77,6 +77,8 @@ typedef struct phone {
 } phone_t;
 
 typedef struct answerbox {
+	link_t ab_link;
+
 	IRQ_SPINLOCK_DECLARE(lock);
 
 	/** Answerbox is active until it enters cleanup. */
@@ -104,6 +106,8 @@ typedef struct answerbox {
 
 	/** Notifications from IRQ handlers. */
 	list_t irq_notifs;
+
+	kobject_t *kobject;
 } answerbox_t;
 
 typedef struct call {
@@ -186,6 +190,7 @@ extern void ipc_phone_init(phone_t *, struct task *);
 extern bool ipc_phone_connect(phone_t *, answerbox_t *);
 extern errno_t ipc_phone_hangup(phone_t *);
 
+extern answerbox_t *ipc_answerbox_alloc(void);
 extern void ipc_answerbox_init(answerbox_t *, struct task *);
 
 extern void ipc_cleanup(void);

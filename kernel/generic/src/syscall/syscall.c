@@ -152,6 +152,8 @@ syshandler_t syscall_table[SYSCALL_END] = {
 	[SYS_PAGE_FIND_MAPPING] = (syshandler_t) sys_page_find_mapping,
 
 	/* IPC related syscalls. */
+	[SYS_IPC_ANSWERBOX_CREATE] = (syshandler_t) sys_ipc_answerbox_create,
+	[SYS_IPC_ANSWERBOX_DESTROY] = (syshandler_t) sys_ipc_answerbox_destroy,
 	[SYS_IPC_CALL_ASYNC_FAST] = (syshandler_t) sys_ipc_call_async_fast,
 	[SYS_IPC_CALL_ASYNC_SLOW] = (syshandler_t) sys_ipc_call_async_slow,
 	[SYS_IPC_ANSWER_FAST] = (syshandler_t) sys_ipc_answer_fast,

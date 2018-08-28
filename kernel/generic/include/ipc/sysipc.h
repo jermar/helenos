@@ -41,6 +41,8 @@
 
 extern errno_t ipc_req_internal(cap_phone_handle_t, ipc_data_t *, sysarg_t);
 
+extern sys_errno_t sys_ipc_answerbox_create(cap_answerbox_handle_t *);
+extern sys_errno_t sys_ipc_answerbox_destroy(cap_answerbox_handle_t);
 extern sys_errno_t sys_ipc_call_async_fast(cap_phone_handle_t, sysarg_t,
     sysarg_t, sysarg_t, sysarg_t, sysarg_t);
 extern sys_errno_t sys_ipc_call_async_slow(cap_phone_handle_t, ipc_data_t *,
