@@ -45,6 +45,9 @@ enum {
 typedef void *cap_handle_t;
 
 typedef struct {
+} * cap_answerbox_handle_t;
+
+typedef struct {
 } *cap_call_handle_t;
 
 typedef struct {
