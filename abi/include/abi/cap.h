@@ -38,6 +38,17 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+typedef enum {
+	KOBJECT_TYPE_CALL,
+	KOBJECT_TYPE_IRQ,
+	KOBJECT_TYPE_PHONE,
+	KOBJECT_TYPE_WAITQ,
+	KOBJECT_TYPE_IPC_BUF,
+	KOBJECT_TYPE_IPC_EP,
+	KOBJECT_TYPE_CAPLIST,
+	KOBJECT_TYPE_MAX
+} kobject_type_t;
+
 typedef void *cap_handle_t;
 
 typedef struct {
@@ -51,6 +62,15 @@ typedef struct {
 
 typedef struct {
 } *cap_waitq_handle_t;
+
+typedef struct {
+} *cap_ipc_buf_handle_t;
+
+typedef struct {
+} *cap_ipc_ep_handle_t;
+
+typedef struct {
+} *cap_caplist_handle_t;
 
 static cap_handle_t const CAP_NIL = 0;
 

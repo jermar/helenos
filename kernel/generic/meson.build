@@ -49,6 +49,7 @@ generic_src += files(
 	'common/strtol.c',
 
 	'src/cap/cap.c',
+	'src/cap/caplist.c',
 	'src/console/chardev.c',
 	'src/console/console.c',
 	'src/console/prompt.c',
@@ -77,6 +78,7 @@ generic_src += files(
 	'src/ipc/ops/stchngath.c',
 	'src/ipc/sysipc.c',
 	'src/ipc/sysipc_ops.c',
+	'src/ipc2/ipc.c',
 	'src/lib/elf.c',
 	'src/lib/halt.c',
 	'src/lib/mem.c',
