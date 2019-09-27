@@ -50,20 +50,15 @@ typedef enum {
 	CAP_STATE_PUBLISHED
 } cap_state_t;
 
-typedef enum {
-	KOBJECT_TYPE_CALL,
-	KOBJECT_TYPE_IRQ,
-	KOBJECT_TYPE_PHONE,
-	KOBJECT_TYPE_WAITQ,
-	KOBJECT_TYPE_MAX
-} kobject_type_t;
-
 struct task;
 
 struct call;
 struct irq;
 struct phone;
 struct waitq;
+struct ipc_buf;
+struct ipc_ep;
+struct caplist;
 
 typedef struct kobject_ops {
 	void (*destroy)(void *);
@@ -81,10 +76,16 @@ typedef struct kobject {
 	kobject_type_t type;
 	atomic_t refcnt;
 
-	/** Mutex protecting caps_list */
-	mutex_t caps_list_lock;
+	/** Mutex protecting the capapilities list, cl_link and in_caplist */
+	mutex_t lock;
+
 	/** List of published capabilities associated with the kobject */
-	list_t caps_list;
+	list_t capabilities;
+
+	/** Linkage for membership in a caplist */
+	link_t cl_link;
+	/** Pointer to caplist the kobject is a member of. */
+	struct caplist *in_caplist;
 
 	union {
 		void *raw;
@@ -92,6 +93,9 @@ typedef struct kobject {
 		struct irq *irq;
 		struct phone *phone;
 		struct waitq *waitq;
+		struct ipc_buf *ipc_buf;
+		struct ipc_ep *ipc_ep;
+		struct caplist *caplist;
 	};
 } kobject_t;
 
@@ -133,10 +137,10 @@ extern bool caps_apply_to_kobject_type(struct task *, kobject_type_t,
     bool (*)(cap_t *, void *), void *);
 
 extern errno_t cap_alloc(struct task *, cap_handle_t *);
-extern void cap_publish(struct task *, cap_handle_t, kobject_t *);
+extern errno_t cap_publish(struct task *, cap_handle_t, kobject_t *);
 extern kobject_t *cap_unpublish(struct task *, cap_handle_t, kobject_type_t);
 extern void cap_revoke(kobject_t *);
-extern void cap_free(struct task *, cap_handle_t);
+extern errno_t cap_free(struct task *, cap_handle_t);
 
 extern kobject_t *kobject_alloc(unsigned int);
 extern void kobject_free(kobject_t *);
@@ -144,6 +148,9 @@ extern void kobject_initialize(kobject_t *, kobject_type_t, void *);
 extern kobject_t *kobject_get(struct task *, cap_handle_t, kobject_type_t);
 extern void kobject_add_ref(kobject_t *);
 extern void kobject_put(kobject_t *);
+
+extern sys_errno_t sys_cap_alloc(uspace_ptr_cap_handle_t);
+extern sys_errno_t sys_cap_free(cap_handle_t);
 
 #endif
 

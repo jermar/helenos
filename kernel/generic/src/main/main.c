@@ -81,6 +81,7 @@
 #include <arch.h>
 #include <arch/faddr.h>
 #include <ipc/ipc.h>
+#include <ipc2/ipc.h>
 #include <macros.h>
 #include <smp/smp.h>
 #include <ddi/ddi.h>
@@ -90,6 +91,7 @@
 #include <sysinfo/stats.h>
 #include <lib/ra.h>
 #include <cap/cap.h>
+#include <cap/caplist.h>
 
 /*
  * Ensure [u]int*_t types are of correct size.
@@ -274,6 +276,7 @@ void main_bsp_separated_stack(void)
 	timeout_init();
 	scheduler_init();
 	caps_init();
+	caplist_init();
 	task_init();
 	thread_init();
 	sys_waitq_init();
@@ -289,6 +292,7 @@ void main_bsp_separated_stack(void)
 		printf("No init binaries found.\n");
 
 	ipc_init();
+	ipc2_init();
 	event_init();
 	kio_init();
 	log_init();

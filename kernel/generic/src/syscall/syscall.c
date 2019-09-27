@@ -36,6 +36,7 @@
  */
 
 #include <syscall/syscall.h>
+#include <cap/caplist.h>
 #include <proc/thread.h>
 #include <proc/task.h>
 #include <proc/program.h>
@@ -45,6 +46,7 @@
 #include <debug.h>
 #include <interrupt.h>
 #include <ipc/sysipc.h>
+#include <ipc2/ipc.h>
 #include <synch/smc.h>
 #include <synch/syswaitq.h>
 #include <ddi/ddi.h>
@@ -121,6 +123,10 @@ syshandler_t syscall_table[SYSCALL_END] = {
 	/* System management syscalls. */
 	[SYS_KIO] = (syshandler_t) sys_kio,
 
+	/* Capability management syscalls. */
+	[SYS_CAP_ALLOC] = (syshandler_t) sys_cap_alloc,
+	[SYS_CAP_FREE] = (syshandler_t) sys_cap_free,
+
 	/* Thread and task related syscalls. */
 	[SYS_THREAD_CREATE] = (syshandler_t) sys_thread_create,
 	[SYS_THREAD_EXIT] = (syshandler_t) sys_thread_exit,
@@ -167,6 +173,22 @@ syshandler_t syscall_table[SYSCALL_END] = {
 	[SYS_IPC_EVENT_SUBSCRIBE] = (syshandler_t) sys_ipc_event_subscribe,
 	[SYS_IPC_EVENT_UNSUBSCRIBE] = (syshandler_t) sys_ipc_event_unsubscribe,
 	[SYS_IPC_EVENT_UNMASK] = (syshandler_t) sys_ipc_event_unmask,
+
+	/* IPC v2 syscalls. */
+	[SYS_IPC2_BUF_ALLOC] = (syshandler_t) sys_ipc2_buf_alloc,
+	[SYS_IPC2_BUF_FREE] = (syshandler_t) sys_ipc2_buf_free,
+	[SYS_IPC2_BUF_SEND] = (syshandler_t) sys_ipc2_buf_send,
+	[SYS_IPC2_BUF_RECEIVE] = (syshandler_t) sys_ipc2_buf_receive,
+	[SYS_IPC2_BUF_FINISH] = (syshandler_t) sys_ipc2_buf_finish,
+	[SYS_IPC2_BUF_WAIT] = (syshandler_t) sys_ipc2_buf_wait,
+	[SYS_IPC2_EP_CREATE] = (syshandler_t) sys_ipc2_ep_create,
+	[SYS_IPC2_EP_DESTROY] = (syshandler_t) sys_ipc2_ep_destroy,
+
+	/* Caplist syscalls. */
+	[SYS_CAPLIST_CREATE] = (syshandler_t) sys_caplist_create,
+	[SYS_CAPLIST_DESTROY] = (syshandler_t) sys_caplist_destroy,
+	[SYS_CAPLIST_ADD] = (syshandler_t) sys_caplist_add,
+	[SYS_CAPLIST_DEL] = (syshandler_t) sys_caplist_del,
 
 	/* Permission related syscalls. */
 	[SYS_PERM_GRANT] = (syshandler_t) sys_perm_grant,

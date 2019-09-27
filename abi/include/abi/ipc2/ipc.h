@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Vojtech Horky
+ * Copyright (c) 2019 Jakub Jermar
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,38 +26,48 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <stdio.h>
-#include <pcut/pcut.h>
+/** @addtogroup abi_generic
+ * @{
+ */
+/** @file
+ */
 
-PCUT_INIT;
+#ifndef _ABI_IPC2_IPC_H_
+#define _ABI_IPC2_IPC_H_
 
-PCUT_IMPORT(cap);
-PCUT_IMPORT(caplist);
-PCUT_IMPORT(capa);
-PCUT_IMPORT(casting);
-PCUT_IMPORT(circ_buf);
-PCUT_IMPORT(double_to_str);
-PCUT_IMPORT(fibril_timer);
-PCUT_IMPORT(getopt);
-PCUT_IMPORT(gsort);
-PCUT_IMPORT(ieee_double);
-PCUT_IMPORT(imath);
-PCUT_IMPORT(inttypes);
-PCUT_IMPORT(ipc2);
-PCUT_IMPORT(ipc2_roundtrip);
-PCUT_IMPORT(mem);
-PCUT_IMPORT(odict);
-PCUT_IMPORT(perf);
-PCUT_IMPORT(perm);
-PCUT_IMPORT(qsort);
-PCUT_IMPORT(scanf);
-PCUT_IMPORT(sprintf);
-PCUT_IMPORT(stdio);
-PCUT_IMPORT(stdlib);
-PCUT_IMPORT(str);
-PCUT_IMPORT(string);
-PCUT_IMPORT(strtol);
-PCUT_IMPORT(table);
-PCUT_IMPORT(uuid);
+#include <abi/cap.h>
+#include <stdint.h>
+#include <stddef.h>
+#include <errno.h>
+#include <_bits/native.h>
 
-PCUT_MAIN();
+/**
+ * Info structure returned after receiving from an IPC endpoint.
+ */
+typedef struct ipc_buf_receive_info {
+	/** Label of the IPC endpoint which received the IPC buffer. */
+	uspace_addr_t ep_label;
+	/** How much data is in the IPC buffer. */
+	size_t used;
+	/** Total size of the IPC buffer. */
+	size_t size;
+} ipc_buf_receive_info_t;
+
+/**
+ * Info structure returned after waiting on an IPC buffer handle.
+ */
+typedef struct ipc_buf_wait_info {
+	/** Label of the IPC buffer which was successfully waited for. */
+	uspace_addr_t buf_label;
+	/** How much data is in the IPC buffer. */
+	size_t used;
+	/** Total size of the IPC buffer. */
+	size_t size;
+	/** Wait result */
+	errno_t result;
+} ipc_buf_wait_info_t;
+
+#endif
+
+/** @}
+ */

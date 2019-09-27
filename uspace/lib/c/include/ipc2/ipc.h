@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Vojtech Horky
+ * Copyright (c) 2019 Jakub Jermar
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,38 +26,37 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <stdio.h>
-#include <pcut/pcut.h>
+/** @addtogroup libcipc2
+ * @{
+ */
+/** @file
+ */
 
-PCUT_INIT;
+#ifndef _LIBC_IPC2_H_
+#define _LIBC_IPC2_H_
 
-PCUT_IMPORT(cap);
-PCUT_IMPORT(caplist);
-PCUT_IMPORT(capa);
-PCUT_IMPORT(casting);
-PCUT_IMPORT(circ_buf);
-PCUT_IMPORT(double_to_str);
-PCUT_IMPORT(fibril_timer);
-PCUT_IMPORT(getopt);
-PCUT_IMPORT(gsort);
-PCUT_IMPORT(ieee_double);
-PCUT_IMPORT(imath);
-PCUT_IMPORT(inttypes);
-PCUT_IMPORT(ipc2);
-PCUT_IMPORT(ipc2_roundtrip);
-PCUT_IMPORT(mem);
-PCUT_IMPORT(odict);
-PCUT_IMPORT(perf);
-PCUT_IMPORT(perm);
-PCUT_IMPORT(qsort);
-PCUT_IMPORT(scanf);
-PCUT_IMPORT(sprintf);
-PCUT_IMPORT(stdio);
-PCUT_IMPORT(stdlib);
-PCUT_IMPORT(str);
-PCUT_IMPORT(string);
-PCUT_IMPORT(strtol);
-PCUT_IMPORT(table);
-PCUT_IMPORT(uuid);
+#include <abi/ipc2/ipc.h>
+#include <abi/cap.h>
+#include <abi/synch.h>
 
-PCUT_MAIN();
+#include <stdbool.h>
+
+extern errno_t ipc2_buf_alloc(size_t, void *, cap_ipc_buf_handle_t *);
+extern errno_t ipc2_buf_free(cap_ipc_buf_handle_t);
+
+extern errno_t ipc2_ep_create(cap_ipc_ep_handle_t *, void *,
+    cap_caplist_handle_t);
+extern errno_t ipc2_ep_destroy(cap_ipc_ep_handle_t);
+
+extern errno_t ipc2_buf_send(const void *, size_t, cap_ipc_buf_handle_t,
+    cap_ipc_ep_handle_t, cap_caplist_handle_t);
+extern errno_t ipc2_buf_receive(void *, size_t, cap_handle_t, cap_handle_t,
+    synch_timeout_t, ipc_buf_receive_info_t *);
+extern errno_t ipc2_buf_finish(const void *, size_t, cap_ipc_buf_handle_t);
+extern errno_t ipc2_buf_wait(void *, size_t, cap_handle_t, synch_timeout_t,
+    bool, ipc_buf_wait_info_t *);
+
+#endif
+
+/** @}
+ */

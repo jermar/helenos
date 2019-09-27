@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Vojtech Horky
+ * Copyright (c) 2019 Jakub Jermar
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,38 +26,25 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <stdio.h>
+#include <cap/cap.h>
+#include <abi/cap.h>
+#include <errno.h>
+
 #include <pcut/pcut.h>
 
 PCUT_INIT;
 
-PCUT_IMPORT(cap);
-PCUT_IMPORT(caplist);
-PCUT_IMPORT(capa);
-PCUT_IMPORT(casting);
-PCUT_IMPORT(circ_buf);
-PCUT_IMPORT(double_to_str);
-PCUT_IMPORT(fibril_timer);
-PCUT_IMPORT(getopt);
-PCUT_IMPORT(gsort);
-PCUT_IMPORT(ieee_double);
-PCUT_IMPORT(imath);
-PCUT_IMPORT(inttypes);
-PCUT_IMPORT(ipc2);
-PCUT_IMPORT(ipc2_roundtrip);
-PCUT_IMPORT(mem);
-PCUT_IMPORT(odict);
-PCUT_IMPORT(perf);
-PCUT_IMPORT(perm);
-PCUT_IMPORT(qsort);
-PCUT_IMPORT(scanf);
-PCUT_IMPORT(sprintf);
-PCUT_IMPORT(stdio);
-PCUT_IMPORT(stdlib);
-PCUT_IMPORT(str);
-PCUT_IMPORT(string);
-PCUT_IMPORT(strtol);
-PCUT_IMPORT(table);
-PCUT_IMPORT(uuid);
+PCUT_TEST_SUITE(cap);
 
-PCUT_MAIN();
+/** A capability can be allocated and freed. */
+PCUT_TEST(cap_alloc_free)
+{
+	cap_handle_t handle = CAP_NIL;
+
+	PCUT_ASSERT_ERRNO_VAL(EOK, cap_alloc(&handle));
+	PCUT_ASSERT_FALSE(handle == CAP_NIL);
+	PCUT_ASSERT_ERRNO_VAL(EOK, cap_free(handle));
+	PCUT_ASSERT_ERRNO_VAL(ENOENT, cap_free(handle));
+}
+
+PCUT_EXPORT(cap);

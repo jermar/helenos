@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Vojtech Horky
+ * Copyright (c) 2019 Jakub Jermar
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,38 +26,51 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <stdio.h>
-#include <pcut/pcut.h>
+/** @addtogroup kernel_generic
+ * @{
+ */
+/** @file
+ */
 
-PCUT_INIT;
+#ifndef KERN_CAPLIST_H_
+#define KERN_CAPLIST_H_
 
-PCUT_IMPORT(cap);
-PCUT_IMPORT(caplist);
-PCUT_IMPORT(capa);
-PCUT_IMPORT(casting);
-PCUT_IMPORT(circ_buf);
-PCUT_IMPORT(double_to_str);
-PCUT_IMPORT(fibril_timer);
-PCUT_IMPORT(getopt);
-PCUT_IMPORT(gsort);
-PCUT_IMPORT(ieee_double);
-PCUT_IMPORT(imath);
-PCUT_IMPORT(inttypes);
-PCUT_IMPORT(ipc2);
-PCUT_IMPORT(ipc2_roundtrip);
-PCUT_IMPORT(mem);
-PCUT_IMPORT(odict);
-PCUT_IMPORT(perf);
-PCUT_IMPORT(perm);
-PCUT_IMPORT(qsort);
-PCUT_IMPORT(scanf);
-PCUT_IMPORT(sprintf);
-PCUT_IMPORT(stdio);
-PCUT_IMPORT(stdlib);
-PCUT_IMPORT(str);
-PCUT_IMPORT(string);
-PCUT_IMPORT(strtol);
-PCUT_IMPORT(table);
-PCUT_IMPORT(uuid);
+#include <abi/cap.h>
+#include <cap/cap.h>
+#include <typedefs.h>
+#include <adt/list.h>
+#include <synch/mutex.h>
+#include <synch/condvar.h>
 
-PCUT_MAIN();
+typedef struct caplist {
+	/**
+	 * Immutable type of the caplist. All listed kernel objects are required
+	 * to be of this type.
+	 */
+	kobject_type_t type;
+
+	mutex_t mutex;
+	/** Member kernel objects. */
+	list_t objects;
+
+	list_t queue;
+	condvar_t cv;
+} caplist_t;
+
+extern kobject_ops_t caplist_kobject_ops;
+
+extern void caplist_init(void);
+
+extern errno_t caplist_add(caplist_t *, kobject_t *);
+extern errno_t caplist_del(caplist_t *, kobject_t *);
+
+extern sys_errno_t sys_caplist_create(uspace_ptr_cap_caplist_handle_t,
+    kobject_type_t);
+extern sys_errno_t sys_caplist_destroy(cap_caplist_handle_t);
+extern sys_errno_t sys_caplist_add(cap_caplist_handle_t, cap_handle_t);
+extern sys_errno_t sys_caplist_del(cap_caplist_handle_t, cap_handle_t);
+
+#endif
+
+/** @}
+ */
