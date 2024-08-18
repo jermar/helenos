@@ -70,6 +70,20 @@ void condvar_broadcast(condvar_t *cv)
 	waitq_wake_all(&cv->wq);
 }
 
+errno_t _condvar_wait_timeout(condvar_t *cv, mutex_t *mtx, uint32_t usec,
+  unsigned int flags)
+{
+	wait_guard_t guard = waitq_sleep_prepare(&cv->wq);
+
+	/* Unlock only after the waitq is locked so we don't miss a wakeup. */
+	mutex_unlock(mtx);
+
+	errno_t rc = waitq_sleep_timeout_unsafe(&cv->wq, usec, flags, guard);
+
+	mutex_lock(mtx);
+	return rc;
+}
+
 /** Wait for the condition becoming true.
  *
  * @param cv		Condition variable.
